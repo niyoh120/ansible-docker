@@ -1,0 +1,12 @@
+---
+# defaults file for docker-ansible
+
+enable_cn_mirror: false
+
+# Optional: provide a list of registry mirror URLs to write into /etc/docker/daemon.json.
+# If this list is non-empty the playbook will create/update daemon.json with these mirrors.
+# Example:
+# docker_registry_mirrors:
+#   - "https://mirror.gcr.io"
+#   - "https://registry-mirror.example.com"
+docker_registry_mirrors: []

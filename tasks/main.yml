@@ -1,0 +1,54 @@
+- name: Download Docker installation script
+  get_url:
+    url: https://get.docker.com
+    dest: /tmp/get-docker.sh
+    mode: "0755"
+  tags:
+    - install
+
+- name: Run Docker installation script
+  command: "sh /tmp/get-docker.sh {{ '--mirror Aliyun' if enable_cn_mirror | bool else '' }}"
+  tags:
+    - install
+
+- name: Add user to Docker group
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: true
+  tags:
+    - install
+
+- name: Start and enable Docker service
+  systemd:
+    name: docker
+    state: started
+    enabled: true
+  tags:
+    - install
+
+- name: Create docker daemon directory
+  file:
+    path: /etc/docker
+    state: directory
+    mode: '0755'
+  tags:
+    - install
+    - config
+
+- name: Configure Docker daemon.json
+  copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+        "registry-mirrors": [
+{% for m in docker_registry_mirrors %}
+          "{{ m }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+        ]
+      }
+  notify: Restart Docker service
+  when: docker_registry_mirrors | length > 0
+  tags:
+    - install
+    - config
