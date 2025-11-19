@@ -42,9 +42,9 @@
     content: |
       {
         "registry-mirrors": [
-{% for m in docker_registry_mirrors %}
+          {% for m in docker_registry_mirrors %}
           "{{ m }}"{% if not loop.last %},{% endif %}
-{% endfor %}
+          {% endfor %}
         ]
       }
   notify: Restart Docker service
